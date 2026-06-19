@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --sand: oklch(96% 0.012 80);
+    --sand-dark: oklch(88% 0.018 75);
+    --amber: oklch(72% 0.14 70);
+    --amber-dark: oklch(60% 0.16 65);
+    --rose: oklch(72% 0.12 20);
+    --teal: oklch(62% 0.12 195);
+    --ink: oklch(22% 0.01 250);
+    --muted: oklch(55% 0.01 250);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    background-color: var(--sand);
+    color: var(--ink);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100dvh;
+  }
+
+  [dir="rtl"], .rtl {
+    direction: rtl;
+    font-family: 'David Libre', 'Frank Ruhl Libre', 'Segoe UI', serif;
+  }
+}
+
+@layer utilities {
+  .hebrew {
+    direction: rtl;
+    font-family: 'Frank Ruhl Libre', 'David Libre', serif;
+    unicode-bidi: bidi-override;
+  }
+
+  .card-flip {
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-flip.flipped {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .card-back {
+    transform: rotateY(180deg);
+  }
+}
