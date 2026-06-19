@@ -17,7 +17,7 @@ const CLUES_PER_GAME = 12;
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function getProgressDotColor(i: number, idx: number, history: boolean[]): string {
+function getProgressDotColor(i: number, idx: number, history: boolean[]): string {
   if (i < history.length) return history[i] ? '#22c55e' : '#fbbf24';
   if (i === idx) return '#f59e0b';
   return '#e5e7eb';
