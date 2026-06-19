@@ -9,34 +9,50 @@ interface Props {
 
 type Stage = 'build' | 'describe';
 
+// Maps memberId → how many of that relative the student has (0 = not in family)
+type FamilyCounts = Record<string, number>;
+
+const MAX_COUNT = 5;
+
+function buildYeshSentence(member: FamilyMember, count: number): { hebrew: string; english: string } {
+  if (count === 1) {
+    return {
+      hebrew: `יֵשׁ לִי ${member.hebrewNikud}.`,
+      english: `I have a ${member.english.toLowerCase()}.`,
+    };
+  }
+  return {
+    hebrew: `יֵשׁ לִי ${count} ${member.hebrewPluralNikud}.`,
+    english: `I have ${count} ${member.englishPlural.toLowerCase()}.`,
+  };
+}
+
 export function MyFamily({ onBack }: Props) {
   const [stage, setStage] = useState<Stage>('build');
-  const [myFamily, setMyFamily] = useState<FamilyMember[]>([]);
+  const [counts, setCounts] = useState<FamilyCounts>({});
   const [describeIndex, setDescribeIndex] = useState(0);
-  const [useSheli, setUseSheli] = useState(false);
 
-  const toggleMember = (member: FamilyMember) => {
-    setMyFamily((prev) =>
-      prev.find((m) => m.id === member.id)
-        ? prev.filter((m) => m.id !== member.id)
-        : [...prev, member]
-    );
+  const setCount = (id: string, delta: number) => {
+    setCounts((prev) => {
+      const next = Math.max(0, Math.min(MAX_COUNT, (prev[id] ?? 0) + delta));
+      return { ...prev, [id]: next };
+    });
   };
 
-  const currentMember = myFamily[describeIndex];
+  // Members that have at least count 1
+  const activeMembers = familyMembers.filter((m) => (counts[m.id] ?? 0) > 0);
+  const currentMember = activeMembers[describeIndex];
+  const currentCount = currentMember ? (counts[currentMember.id] ?? 1) : 1;
 
   const pronoun = currentMember
     ? currentMember.gender === 'feminine' ? 'זֹאת' : 'זֶה'
     : '';
-  const sentence = currentMember
-    ? useSheli
-      ? `${pronoun} ${currentMember.hebrewNikud} שֶׁלִּי.`
-      : `${pronoun} ${currentMember.hebrewNikud}.`
-    : '';
 
-  const yeshSentence = currentMember
-    ? `יֵשׁ לִי ${currentMember.hebrewNikud}.`
-    : '';
+  const basicSentence = currentMember && currentCount === 1
+    ? `${pronoun} ${currentMember.hebrewNikud}.`
+    : null;
+
+  const yeshData = currentMember ? buildYeshSentence(currentMember, currentCount) : null;
 
   return (
     <div className="min-h-screen px-4 py-8" style={{ background: 'var(--sand)' }}>
@@ -54,7 +70,7 @@ export function MyFamily({ onBack }: Props) {
             <button
               key={s}
               onClick={() => { setStage(s); setDescribeIndex(0); }}
-              disabled={s === 'describe' && myFamily.length === 0}
+              disabled={s === 'describe' && activeMembers.length === 0}
               className="px-5 py-1.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-40"
               style={{
                 background: stage === s ? 'white' : 'transparent',
@@ -70,11 +86,11 @@ export function MyFamily({ onBack }: Props) {
         {stage === 'build' && (
           <>
             <p className="text-center text-sm mb-4" style={{ color: 'var(--muted)' }}>
-              Click to add family members to your family
+              Use <strong>＋</strong> and <strong>－</strong> to choose how many of each relative you have
             </p>
 
-            {/* Selected family display */}
-            {myFamily.length > 0 && (
+            {/* Selected family summary */}
+            {activeMembers.length > 0 && (
               <div
                 className="rounded-2xl p-4 mb-6 text-center"
                 style={{ background: '#fff7ed', border: '1.5px solid #fed7aa' }}
@@ -82,51 +98,85 @@ export function MyFamily({ onBack }: Props) {
                 <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: '#c2410c' }}>
                   הַמִּשְׁפָּחָה שֶׁלִּי
                 </p>
-                <div className="flex flex-wrap justify-center gap-3">
-                  {myFamily.map((m) => (
-                    <div key={m.id} className="flex flex-col items-center gap-1">
-                      <span className="text-3xl">{m.emoji}</span>
-                      <span className="hebrew text-sm font-bold" style={{ color: 'var(--ink)' }}>
-                        {m.hebrewNikud}
-                      </span>
-                    </div>
-                  ))}
+                <div className="flex flex-wrap justify-center gap-4">
+                  {activeMembers.map((m) => {
+                    const cnt = counts[m.id] ?? 0;
+                    const { hebrew } = buildYeshSentence(m, cnt);
+                    return (
+                      <div key={m.id} className="flex flex-col items-center gap-1">
+                        <span className="text-2xl">{m.emoji}</span>
+                        <span
+                          className="hebrew text-sm font-bold"
+                          style={{ color: 'var(--ink)', direction: 'rtl' }}
+                        >
+                          {hebrew}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
-            {/* All members to pick */}
-            <div className="grid grid-cols-4 gap-3">
+            {/* Member grid with counters */}
+            <div className="grid grid-cols-2 gap-3">
               {familyMembers.map((member) => {
-                const selected = myFamily.some((m) => m.id === member.id);
+                const count = counts[member.id] ?? 0;
+                const active = count > 0;
                 return (
-                  <button
+                  <div
                     key={member.id}
-                    onClick={() => toggleMember(member)}
-                    className="flex flex-col items-center gap-2 p-3 rounded-2xl transition-all duration-200 hover:scale-105 active:scale-95"
+                    className="flex flex-col items-center gap-2 p-3 rounded-2xl transition-all duration-200"
                     style={{
-                      background: selected ? '#fff7ed' : 'white',
-                      border: `1.5px solid ${selected ? '#f97316' : '#e5e7eb'}`,
+                      background: active ? '#fff7ed' : 'white',
+                      border: `1.5px solid ${active ? '#f97316' : '#e5e7eb'}`,
                     }}
                   >
-                    <span className="text-3xl">{member.emoji}</span>
-                    <span className="hebrew text-base font-bold" style={{ color: 'var(--ink)' }}>
-                      {member.hebrewNikud}
-                    </span>
-                    <span className="text-xs" style={{ color: 'var(--muted)' }}>
-                      {member.english}
-                    </span>
-                    {selected && (
-                      <span className="text-xs font-bold" style={{ color: '#f97316' }}>✓ added</span>
-                    )}
-                  </button>
+                    <div className="flex items-center gap-2">
+                      <span className="text-3xl">{member.emoji}</span>
+                      <div className="text-right" style={{ direction: 'rtl' }}>
+                        <div className="hebrew text-base font-bold" style={{ color: 'var(--ink)' }}>
+                          {count <= 1 ? member.hebrewNikud : member.hebrewPluralNikud}
+                        </div>
+                        <div className="text-xs" style={{ color: 'var(--muted)' }}>
+                          {count <= 1 ? member.english : member.englishPlural}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Counter row */}
+                    <div className="flex items-center gap-3 mt-1">
+                      <button
+                        onClick={() => setCount(member.id, -1)}
+                        disabled={count === 0}
+                        className="w-7 h-7 rounded-full text-lg font-bold flex items-center justify-center transition-all disabled:opacity-30 hover:scale-110 active:scale-95"
+                        style={{ background: '#fed7aa', color: '#c2410c' }}
+                      >
+                        −
+                      </button>
+                      <span
+                        className="w-6 text-center text-lg font-bold tabular-nums"
+                        style={{ color: active ? '#c2410c' : 'var(--muted)' }}
+                      >
+                        {count}
+                      </span>
+                      <button
+                        onClick={() => setCount(member.id, +1)}
+                        disabled={count === MAX_COUNT}
+                        className="w-7 h-7 rounded-full text-lg font-bold flex items-center justify-center transition-all disabled:opacity-30 hover:scale-110 active:scale-95"
+                        style={{ background: '#f97316', color: 'white' }}
+                      >
+                        ＋
+                      </button>
+                    </div>
+                  </div>
                 );
               })}
             </div>
 
-            {myFamily.length > 0 && (
+            {activeMembers.length > 0 && (
               <button
-                onClick={() => setStage('describe')}
+                onClick={() => { setDescribeIndex(0); setStage('describe'); }}
                 className="w-full mt-6 py-3 rounded-xl font-semibold transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{ background: '#f97316', color: 'white' }}
               >
@@ -136,37 +186,11 @@ export function MyFamily({ onBack }: Props) {
           </>
         )}
 
-        {stage === 'describe' && myFamily.length > 0 && (
+        {stage === 'describe' && activeMembers.length > 0 && currentMember && (
           <>
-            {/* Mode toggle */}
-            <div className="flex gap-2 justify-center mb-6 p-1 rounded-xl bg-stone-200 w-fit mx-auto">
-              <button
-                onClick={() => setUseSheli(false)}
-                className="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all"
-                style={{
-                  background: !useSheli ? 'white' : 'transparent',
-                  color: !useSheli ? 'var(--ink)' : 'var(--muted)',
-                  boxShadow: !useSheli ? '0 1px 3px rgba(0,0,0,0.12)' : 'none',
-                }}
-              >
-                Basic (זֹאת אִמָּא)
-              </button>
-              <button
-                onClick={() => setUseSheli(true)}
-                className="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all"
-                style={{
-                  background: useSheli ? 'white' : 'transparent',
-                  color: useSheli ? 'var(--ink)' : 'var(--muted)',
-                  boxShadow: useSheli ? '0 1px 3px rgba(0,0,0,0.12)' : 'none',
-                }}
-              >
-                Possessive (שֶׁלִּי)
-              </button>
-            </div>
-
             {/* Progress dots */}
             <div className="flex justify-center gap-2 mb-6">
-              {myFamily.map((_, i) => (
+              {activeMembers.map((_, i) => (
                 <div
                   key={i}
                   className="w-2.5 h-2.5 rounded-full transition-all"
@@ -182,22 +206,51 @@ export function MyFamily({ onBack }: Props) {
               className="rounded-3xl p-8 text-center mb-6 shadow-sm"
               style={{ background: '#fff7ed', border: '1.5px solid #fed7aa' }}
             >
-              <div className="text-8xl mb-4">{currentMember.emoji}</div>
-
-              {/* יש לי sentence */}
-              <div
-                className="hebrew text-2xl font-semibold mb-4 px-4 py-2 rounded-xl inline-block"
-                style={{ background: '#ffedd5', color: '#c2410c' }}
-              >
-                {yeshSentence}
+              {/* Emoji row — repeat the emoji for each count (up to 5) */}
+              <div className="flex justify-center gap-1 mb-4 flex-wrap">
+                {Array.from({ length: currentCount }).map((_, i) => (
+                  <span key={i} className="text-5xl">{currentMember.emoji}</span>
+                ))}
               </div>
 
-              {/* זה/זאת sentence */}
+              {/* יש לי sentence — primary */}
               <div
-                className="hebrew text-3xl font-bold px-6 py-3 rounded-xl"
-                style={{ background: 'white', color: 'var(--ink)', border: '1.5px solid #fed7aa' }}
+                className="hebrew text-2xl font-bold mb-3 px-6 py-3 rounded-xl inline-block"
+                style={{ background: '#f97316', color: 'white', direction: 'rtl' }}
               >
-                {sentence}
+                {yeshData?.hebrew}
+              </div>
+
+              {/* English translation */}
+              <p className="text-base font-medium mt-1 mb-3" style={{ color: 'var(--muted)' }}>
+                {yeshData?.english}
+              </p>
+
+              {/* זה/זאת sentence — shown only for count = 1 */}
+              {basicSentence && (
+                <div
+                  className="hebrew text-xl font-semibold px-5 py-2 rounded-xl mt-2"
+                  style={{ background: 'white', color: 'var(--ink)', border: '1.5px solid #fed7aa', direction: 'rtl' }}
+                >
+                  {basicSentence}
+                </div>
+              )}
+
+              {/* Singular / plural reminder */}
+              <div className="mt-4 flex justify-center gap-6 text-sm" style={{ color: '#c2410c' }}>
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="hebrew font-bold text-base" dir="rtl">{currentMember.hebrewNikud}</span>
+                  <span className="font-medium">{currentMember.english}</span>
+                </div>
+                {currentCount > 1 && (
+                  <>
+                    <span className="font-bold self-center" style={{ color: '#fed7aa' }}>→</span>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="hebrew font-bold text-base" dir="rtl">{currentMember.hebrewPluralNikud}</span>
+                      <span className="font-medium">{currentMember.englishPlural}</span>
+                    </div>
+                  </>
+                )}
               </div>
 
               <p className="text-sm mt-4" style={{ color: 'var(--muted)' }}>
@@ -205,9 +258,9 @@ export function MyFamily({ onBack }: Props) {
               </p>
             </div>
 
-            {/* My family strip */}
-            <div className="flex justify-center gap-3 mb-6">
-              {myFamily.map((m, i) => (
+            {/* Mini strip of active members */}
+            <div className="flex justify-center gap-3 mb-6 flex-wrap">
+              {activeMembers.map((m, i) => (
                 <button
                   key={m.id}
                   onClick={() => setDescribeIndex(i)}
@@ -219,7 +272,20 @@ export function MyFamily({ onBack }: Props) {
                   }}
                 >
                   <span className="text-2xl">{m.emoji}</span>
-                  <span className="hebrew text-xs font-bold" style={{ color: 'var(--ink)' }}>{m.hebrewNikud}</span>
+                  <span
+                    className="hebrew text-xs font-bold"
+                    style={{ color: 'var(--ink)', direction: 'rtl' }}
+                  >
+                    {(counts[m.id] ?? 1) > 1 ? m.hebrewPluralNikud : m.hebrewNikud}
+                  </span>
+                  {(counts[m.id] ?? 1) > 1 && (
+                    <span
+                      className="text-xs font-bold tabular-nums"
+                      style={{ color: '#f97316' }}
+                    >
+                      ×{counts[m.id]}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -235,7 +301,7 @@ export function MyFamily({ onBack }: Props) {
                   ← Back
                 </button>
               )}
-              {describeIndex < myFamily.length - 1 ? (
+              {describeIndex < activeMembers.length - 1 ? (
                 <button
                   onClick={() => setDescribeIndex((i) => i + 1)}
                   className="flex-1 py-3 rounded-xl font-semibold text-sm transition-all hover:scale-[1.02]"

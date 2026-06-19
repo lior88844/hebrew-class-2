@@ -6,13 +6,16 @@ export interface FamilyMember {
   hebrewNikud: string;        // with vowel marks
   hebrewPossessive: string;   // e.g. אמי / אחותי
   hebrewSheli: string;        // e.g. אמא שלי / אחות שלי
+  hebrewPlural: string;       // plain plural, e.g. אחים
+  hebrewPluralNikud: string;  // plural with nikud, e.g. אַחִים
+  englishPlural: string;      // e.g. brothers
   english: string;
   emoji: string;
   gender: Gender;
   pronoun: string;            // זה / זאת
 }
 
-export type ActivityId = 'vocab' | 'memory' | 'tree' | 'myfamily' | 'bingo';
+export type ActivityId = 'vocab' | 'memory' | 'tree' | 'myfamily' | 'bingo' | 'telephone';
 
 export interface Activity {
   id: ActivityId;

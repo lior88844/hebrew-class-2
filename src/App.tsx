@@ -6,6 +6,7 @@ import { MemoryMatch } from './activities/MemoryMatch';
 import { FamilyTree } from './activities/FamilyTree';
 import { MyFamily } from './activities/MyFamily';
 import { FamilyDeduction } from './activities/FamilyDeduction';
+import { FamilyTelephone } from './activities/FamilyTelephone';
 import type { ActivityId } from './types';
 
 type Screen = ActivityId | 'print' | null;
@@ -20,6 +21,7 @@ export default function App() {
   if (screen === 'tree') return <FamilyTree onBack={handleBack} />;
   if (screen === 'myfamily') return <MyFamily onBack={handleBack} />;
   if (screen === 'bingo') return <FamilyDeduction onBack={handleBack} />;
+  if (screen === 'telephone') return <FamilyTelephone onBack={handleBack} />;
   if (screen === 'print') return <Printable onBack={handleBack} />;
 
   return (
