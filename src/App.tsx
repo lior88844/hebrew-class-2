@@ -7,6 +7,7 @@ import { FamilyTree } from './activities/FamilyTree';
 import { MyFamily } from './activities/MyFamily';
 import { FamilyDeduction } from './activities/FamilyDeduction';
 import { FamilyTelephone } from './activities/FamilyTelephone';
+import { TreePuzzle } from './activities/TreePuzzle';
 import type { ActivityId } from './types';
 
 type Screen = ActivityId | 'print' | null;
@@ -22,6 +23,7 @@ export default function App() {
   if (screen === 'myfamily') return <MyFamily onBack={handleBack} />;
   if (screen === 'bingo') return <FamilyDeduction onBack={handleBack} />;
   if (screen === 'telephone') return <FamilyTelephone onBack={handleBack} />;
+  if (screen === 'puzzle') return <TreePuzzle onBack={handleBack} />;
   if (screen === 'print') return <Printable onBack={handleBack} />;
 
   return (

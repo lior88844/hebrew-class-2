@@ -282,6 +282,15 @@ export const activities: Activity[] = [
     emoji: '📞',
     color: 'blue',
   },
+  {
+    id: 'puzzle',
+    title: 'Build the Family Tree',
+    hebrewTitle: 'בְּנֵה אֶת עֵץ הַמִּשְׁפָּחָה',
+    description: 'Read the clues and drag each person into the right place',
+    duration: '10 min',
+    emoji: '🧩',
+    color: 'indigo',
+  },
 ];
 
 // ─── Extended family tree ────────────────────────────────────────────────────

@@ -15,7 +15,7 @@ export interface FamilyMember {
   pronoun: string;            // זה / זאת
 }
 
-export type ActivityId = 'vocab' | 'memory' | 'tree' | 'myfamily' | 'bingo' | 'telephone';
+export type ActivityId = 'vocab' | 'memory' | 'tree' | 'myfamily' | 'bingo' | 'telephone' | 'puzzle';
 
 export interface Activity {
   id: ActivityId;

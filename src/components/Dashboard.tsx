@@ -7,11 +7,13 @@ interface Props {
 }
 
 const colorMap: Record<string, { bg: string; border: string; badge: string }> = {
-  amber: { bg: '#fef3c7', border: '#f59e0b', badge: '#d97706' },
-  teal:  { bg: '#ccfbf1', border: '#14b8a6', badge: '#0d9488' },
-  green: { bg: '#dcfce7', border: '#22c55e', badge: '#16a34a' },
-  rose:  { bg: '#ffe4e6', border: '#f43f5e', badge: '#e11d48' },
-  purple:{ bg: '#ede9fe', border: '#8b5cf6', badge: '#7c3aed' },
+  amber:  { bg: '#fef3c7', border: '#f59e0b', badge: '#d97706' },
+  teal:   { bg: '#ccfbf1', border: '#14b8a6', badge: '#0d9488' },
+  green:  { bg: '#dcfce7', border: '#22c55e', badge: '#16a34a' },
+  rose:   { bg: '#ffe4e6', border: '#f43f5e', badge: '#e11d48' },
+  purple: { bg: '#ede9fe', border: '#8b5cf6', badge: '#7c3aed' },
+  blue:   { bg: '#dbeafe', border: '#3b82f6', badge: '#1d4ed8' },
+  indigo: { bg: '#e0e7ff', border: '#6366f1', badge: '#4338ca' },
 };
 
 export function Dashboard({ onSelect, onPrint }: Props) {

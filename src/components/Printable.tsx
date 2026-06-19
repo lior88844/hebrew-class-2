@@ -121,7 +121,8 @@ export function Printable({ onBack }: Props) {
                 { he: 'זֶה אַבָּא.', en: 'This is dad.' },
                 { he: 'זֶה אָח.', en: 'This is a brother.' },
                 { he: 'זֶה סַבָּא.', en: 'This is grandpa.' },
-                { he: 'זֶה בֵּן.', en: 'This is a son.' },
+                { he: 'זֶה דּוֹד.', en: 'This is an uncle.' },
+                { he: 'זֶה גִּיס.', en: 'This is a brother-in-law.' },
               ]}
             />
 
@@ -133,7 +134,8 @@ export function Printable({ onBack }: Props) {
                 { he: 'זֹאת אִמָּא.', en: 'This is mom.' },
                 { he: 'זֹאת אָחוֹת.', en: 'This is a sister.' },
                 { he: 'זֹאת סַבְתָּא.', en: 'This is grandma.' },
-                { he: 'זֹאת בַּת.', en: 'This is a daughter.' },
+                { he: 'זֹאת דּוֹדָה.', en: 'This is an aunt.' },
+                { he: 'זֹאת גִּיסָה.', en: 'This is a sister-in-law.' },
               ]}
             />
 
@@ -142,10 +144,11 @@ export function Printable({ onBack }: Props) {
               color="#dcfce7"
               borderColor="#86efac"
               rows={[
-                { he: 'יֵשׁ לִי אִמָּא.', en: 'I have a mom.' },
-                { he: 'יֵשׁ לִי אַבָּא.', en: 'I have a dad.' },
                 { he: 'יֵשׁ לִי אָח.', en: 'I have a brother.' },
                 { he: 'יֵשׁ לִי אָחוֹת.', en: 'I have a sister.' },
+                { he: 'יֵשׁ לִי דּוֹד.', en: 'I have an uncle.' },
+                { he: 'יֵשׁ לִי דּוֹדָה.', en: 'I have an aunt.' },
+                { he: 'יֵשׁ לִי אַחְיָן.', en: 'I have a nephew.' },
               ]}
             />
 
@@ -156,8 +159,9 @@ export function Printable({ onBack }: Props) {
               rows={[
                 { he: 'זֹאת אִמָּא שֶׁלִּי.', en: 'This is my mom.' },
                 { he: 'זֶה אַבָּא שֶׁלִּי.', en: 'This is my dad.' },
-                { he: 'זֹאת אָחוֹת שֶׁלִּי.', en: 'This is my sister.' },
-                { he: 'זֶה אָח שֶׁלִּי.', en: 'This is my brother.' },
+                { he: 'זֶה דּוֹד שֶׁלִּי.', en: 'This is my uncle.' },
+                { he: 'זֹאת דּוֹדָה שֶׁלִּי.', en: 'This is my aunt.' },
+                { he: 'זֶה גִּיס שֶׁלִּי.', en: 'This is my brother-in-law.' },
               ]}
             />
           </div>
@@ -178,11 +182,13 @@ export function Printable({ onBack }: Props) {
                 { he: '_______ אַבָּא.', hint: '(this is — masculine)' },
                 { he: 'יֵשׁ לִי _______.', hint: '(a sister)' },
                 { he: 'זֹאת _______ שֶׁלִּי.', hint: '(grandma)' },
-                { he: 'זֶה _______ שֶׁלִּי.', hint: '(grandpa)' },
-                { he: 'יֵשׁ לִי _______.', hint: '(a brother)' },
-              ].map((row, i) => (
-                <div key={i} style={{ marginBottom: 10, display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                  <span style={{ fontSize: 15, fontFamily: "'Frank Ruhl Libre', serif", direction: 'rtl', display: 'inline-block', minWidth: 140 }}>
+                { he: 'יֵשׁ לִי _______.', hint: '(an uncle)' },
+                { he: 'זֹאת _______ שֶׁלִּי.', hint: '(aunt)' },
+                { he: 'זֶה _______ שֶׁלִּי.', hint: '(brother-in-law)' },
+                { he: 'יֵשׁ לִי _______.', hint: '(a nephew)' },
+              ].map((row) => (
+                <div key={row.hint} style={{ marginBottom: 8, display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                  <span style={{ fontSize: 14, fontFamily: "'Frank Ruhl Libre', serif", direction: 'rtl', display: 'inline-block', minWidth: 140 }}>
                     {row.he}
                   </span>
                   <span style={{ fontSize: 11, color: '#a8a29e' }}>{row.hint}</span>
@@ -190,33 +196,65 @@ export function Printable({ onBack }: Props) {
               ))}
             </div>
 
-            {/* Match */}
+            {/* Match — all 16 words split into two groups */}
             <div style={{ border: '1.5px solid #e7e5e4', borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, color: '#78716c', marginBottom: 12 }}>
-                Match the word
+              <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, color: '#78716c', marginBottom: 10 }}>
+                Match Hebrew → English
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px' }}>
-                <div>
-                  {['👩', '👨', '👧', '👴', '👵', '🧒'].map((emoji, i) => (
-                    <div key={i} style={{ marginBottom: 10, fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 22 }}>{emoji}</span>
-                      <span style={{ flex: 1, borderBottom: '1px solid #d1d5db', minWidth: 60, marginBottom: 2 }} />
-                      <span style={{ fontSize: 11, color: '#a8a29e' }}>{i + 1}</span>
+
+              {/* Basic family */}
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#3b82f6', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.6 }}>
+                Basic Family
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px', marginBottom: 10 }}>
+                <div style={{ direction: 'rtl' }}>
+                  {[
+                    { n: '1', he: 'אִמָּא' }, { n: '2', he: 'אַבָּא' },
+                    { n: '3', he: 'אָח' },    { n: '4', he: 'אָחוֹת' },
+                    { n: '5', he: 'סַבָּא' }, { n: '6', he: 'סַבְתָּא' },
+                    { n: '7', he: 'בֵּן' },   { n: '8', he: 'בַּת' },
+                  ].map((item) => (
+                    <div key={item.n} style={{ marginBottom: 5, fontSize: 14, fontFamily: "'Frank Ruhl Libre', serif", display: 'flex', gap: 4, alignItems: 'center' }}>
+                      <span style={{ fontSize: 10, color: '#a8a29e', direction: 'ltr', minWidth: 12 }}>{item.n}.</span>
+                      <span>{item.he}</span>
+                      <span style={{ flex: 1, borderBottom: '1px dotted #d1d5db', marginBottom: 2, minWidth: 20 }} />
                     </div>
                   ))}
                 </div>
+                <div>
+                  {['daughter', 'grandma', 'dad', 'son', 'sister', 'mom', 'grandpa', 'brother'].map((en, i) => (
+                    <div key={en} style={{ marginBottom: 5, fontSize: 11, color: '#57534e', display: 'flex', gap: 4, alignItems: 'center' }}>
+                      <span style={{ color: '#a8a29e', minWidth: 16 }}>{String.fromCodePoint(65 + i)}.</span>
+                      <span>{en}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Extended family */}
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#8b5cf6', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.6 }}>
+                Extended Family
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px' }}>
                 <div style={{ direction: 'rtl' }}>
                   {[
-                    { n: 'א', he: 'אִמָּא' },
-                    { n: 'ב', he: 'אַבָּא' },
-                    { n: 'ג', he: 'אָחוֹת' },
-                    { n: 'ד', he: 'סַבָּא' },
-                    { n: 'ה', he: 'סַבְתָּא' },
-                    { n: 'ו', he: 'בֵּן' },
+                    { n: '1', he: 'יֶלֶד' },       { n: '2', he: 'יַלְדָּה' },
+                    { n: '3', he: 'דּוֹד' },        { n: '4', he: 'דּוֹדָה' },
+                    { n: '5', he: 'אַחְיָן' },      { n: '6', he: 'אַחְיָנִית' },
+                    { n: '7', he: 'גִּיס' },        { n: '8', he: 'גִּיסָה' },
                   ].map((item) => (
-                    <div key={item.n} style={{ marginBottom: 10, fontSize: 15, fontFamily: "'Frank Ruhl Libre', serif", display: 'flex', gap: 6, alignItems: 'center' }}>
-                      <span style={{ fontSize: 11, color: '#a8a29e', direction: 'ltr' }}>{item.n}.</span>
+                    <div key={item.n} style={{ marginBottom: 5, fontSize: 14, fontFamily: "'Frank Ruhl Libre', serif", display: 'flex', gap: 4, alignItems: 'center' }}>
+                      <span style={{ fontSize: 10, color: '#a8a29e', direction: 'ltr', minWidth: 12 }}>{item.n}.</span>
                       <span>{item.he}</span>
+                      <span style={{ flex: 1, borderBottom: '1px dotted #d1d5db', marginBottom: 2, minWidth: 20 }} />
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  {['niece', 'brother-in-law', 'girl/child', 'nephew', 'sister-in-law', 'uncle', 'boy/child', 'aunt'].map((en, i) => (
+                    <div key={en} style={{ marginBottom: 5, fontSize: 11, color: '#57534e', display: 'flex', gap: 4, alignItems: 'center' }}>
+                      <span style={{ color: '#a8a29e', minWidth: 16 }}>{String.fromCodePoint(65 + i)}.</span>
+                      <span>{en}</span>
                     </div>
                   ))}
                 </div>
